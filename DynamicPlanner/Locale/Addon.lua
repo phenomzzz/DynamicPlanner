@@ -293,7 +293,7 @@ local en3={
  ['perf.none']="Nothing recorded yet.",
  ['nb.btn']="Note",
  ['nb.title']="NSRT note",
- ['nb.tip']="Import, preview, copy, send or share the NSRT note. Clear CDs is here too.",
+ ['nb.tip']="Copy, preview or share the NSRT note. Clear CDs is here too.",
  ['addon.redoTip']="Redo (Ctrl+Y)",
 }
 local pt3={
@@ -304,7 +304,7 @@ local pt3={
  ['perf.none']="Nada gravado ainda.",
  ['nb.btn']="Nota",
  ['nb.title']="Nota do NSRT",
- ['nb.tip']="Importar, pré-visualizar, copiar, enviar ou compartilhar a nota do NSRT. Limpar CDs também fica aqui.",
+ ['nb.tip']="Copiar, pré-visualizar ou compartilhar a nota do NSRT. Limpar CDs também fica aqui.",
  ['addon.redoTip']="Refazer (Ctrl+Y)",
 }
 for key,value in pairs(en3) do A.Locales.en[key]=value end
@@ -357,3 +357,235 @@ local pt4={
 }
 for key,value in pairs(en4) do A.Locales.en[key]=value end
 for key,value in pairs(pt4) do A.Locales['pt-BR'][key]=value end
+local en5={
+ ['hb.paste']="Import note",
+ ['hb.pasteTip']="Paste an NSRT note from the clipboard and review it before anything is added.",
+ ['hb.readTip']="Import this boss's note straight from the NSRT addon.",
+ ['hb.sendTip']="Write the raid note into the NSRT addon as a shared reminder.",
+ ['hb.noNsrt']="Unavailable: the NSRT addon isn't loaded.",
+ ['hb.noSend']="Unavailable: this NSRT version can't receive notes. Use Copy raid CDs in the Note menu.",
+}
+local pt5={
+ ['hb.paste']="Importar nota",
+ ['hb.pasteTip']="Cole uma nota do NSRT da área de transferência e revise antes de adicionar qualquer coisa.",
+ ['hb.readTip']="Importa a nota deste chefe direto do addon NSRT.",
+ ['hb.sendTip']="Grava a nota da raide no addon NSRT como lembrete compartilhado.",
+ ['hb.noNsrt']="Indisponível: o addon NSRT não está carregado.",
+ ['hb.noSend']="Indisponível: esta versão do NSRT não recebe notas. Use Copiar CDs no menu Nota.",
+}
+for key,value in pairs(en5) do A.Locales.en[key]=value end
+for key,value in pairs(pt5) do A.Locales['pt-BR'][key]=value end
+local en6={
+ ['ana.mode.planner']="Planner",['ana.keys']="Open the last pull analyzer",['ana.keysHint']="or the Analyzer switch in the header",['ana.keysKw']="analyzer pull wipe deaths damage",['ana.mode.analyzer']="Analyzer",
+ ['ana.view.overview']="Overview",['ana.view.deaths']="Deaths",['ana.view.damage']="Damage taken",['ana.view.mechanics']="Mechanics",['ana.view.compare']="Compare",
+ ['ana.title']="Last pull analyzer",['ana.pulls']="Recent pulls",['ana.none']="No pulls saved yet",['ana.noPull']="No pull",['ana.pullN']="Pull {n}",['ana.pullTitle']="{boss}, pull {n}",
+ ['ana.delete']="Delete this pull",['ana.clear']="Clear all pulls",['ana.clearConfirm']="Delete all {n} saved pulls",
+ ['ana.saved']="pull {n} of {boss} saved for the analyzer (/dynplan analyzer).",
+ ['ana.kill']="Kill",['ana.wipe']="Wipe",['ana.wipeAt']="Wipe at {p}",['ana.lasted']="{t} long",['ana.phaseEst']="reached phase {p} (estimate from the plan's phase map)",
+ ['ana.diff.14']="Normal",['ana.diff.15']="Heroic",['ana.diff.16']="Mythic",['ana.diff.17']="Raid Finder",['ana.diff.other']="Other difficulty",
+ ['ana.t.deaths']="Deaths",['ana.t.taken']="Damage taken",['ana.t.avoid']="Avoidable damage",['ana.t.ints']="Interrupts",
+ ['ana.findings']="What to look at first",['ana.f.none']="Nothing stands out in the meter for this pull.",
+ ['ana.f.first']="First death: {who} at {t}, killed by {spell}.",['ana.f.firstNoKb']="First death: {who} at {t}.",
+ ['ana.f.early']="{n} players died more than 15 s before the end of the pull.",
+ ['ana.f.avoid']="Costliest avoidable damage: {spell}, {amt} on {n} players, most on {who}.",
+ ['ana.f.player']="Most avoidable damage taken: {who}, {amt}.",
+ ['ana.f.cover']="{n} of {all} deaths happened with no planned raid cooldown active.",
+ ['ana.f.deadly']="{n} spells marked deadly by the game hit the raid.",
+ ['ana.axis']="Pull timeline",['ana.axisSub']="deaths at their real time; raid cooldowns where the open plan puts them",
+ ['ana.lane.phases']="Phases (plan)",['ana.lane.deaths']="Deaths",['ana.lane.planned']="Planned raid CDs",
+ ['ana.noTimes']="The game's meter gives damage totals, not times, so damage is listed in Damage taken and Mechanics instead of on this timeline.",
+ ['ana.plannedAt']="planned at {t}",['ana.notReached']="Not reached: the pull ended first.",
+ ['ana.seen']="Seen in this player's healing or absorb meter.",['ana.noTrace']="No trace in the healing meter (it may still have been cast: not every cooldown heals).",
+ ['ana.coverLine']="Planned cover at that moment: {c}",['ana.noCover']="none planned",
+ ['ana.deathsSub']="{n} deaths, in order",['ana.noDeaths']="Nobody died in this pull.",
+ ['ana.deathsNote']="Hover a death for its last hits. One entry per player: the game keeps only the last death of someone who was brought back.",
+ ['ana.c.time']="Time",['ana.c.player']="Player",['ana.c.kb']="Killing blow",['ana.c.cover']="Planned cover",['ana.c.ints']="Interrupts",['ana.c.disp']="Dispels",
+ ['ana.c.pull']="Pull",['ana.c.result']="Result",['ana.c.dur']="Length",['ana.c.phase']="Phase",['ana.c.deaths']="Deaths",['ana.c.first']="First death",['ana.c.avoid']="Avoidable",['ana.c.top']="Top avoidable",
+ ['ana.melee']="Melee",['ana.kb']="(killing blow)",['ana.hpLeft']="{p} health before",['ana.overkill']="{n} overkill",['ana.noRecap']="No recap for this death",
+ ['ana.byAbility']="By ability",['ana.byAbilitySub']="whole pull",['ana.byPlayer']="By player",['ana.byPlayerSub']="red line: avoidable part",
+ ['ana.tag.avoid']="avoidable",['ana.tag.deadly']="deadly",['ana.hitN']="{n} hit",['ana.avoidN']="{n} avoidable",['ana.more']="and {n} more",
+ ['ana.mechSub']="avoidable damage per spell and who took it (totals: the game gives no hit times or counts)",
+ ['ana.mechTotal']="{n} players, {amt}",['ana.noAvoid']="No avoidable damage in this pull.",
+ ['ana.tip.ground']="Stood in it: step out of the pools early.",['ana.tip.area']="Did not move out of the area in time.",['ana.tip.soak']="Shared hit: large single amounts mean too few soakers.",
+ ['ana.tip.tank']="Tank hit: check the swap and the tank's cooldown.",['ana.tip.raid']="Raid damage: healing and raid cooldowns.",['ana.tip.avoid']="The game marks this damage as avoidable.",
+ ['ana.intTitle']="Interrupts and dispels",['ana.intSub']="counts per player; the game does not tell addons which casts went through",
+ ['ana.noInts']="No interrupts or dispels counted, and no kickers in the plan.",['ana.kicker']="in the plan's kick order",
+ ['ana.cmpSub']="{n} recent pulls of this boss and difficulty; click one to open it",
+ ['ana.locked']="Locked during combat",['ana.lockedSub']="The analyzer reads the game's meter once the fight is over.",
+ ['ana.emptyTitle']="No pulls yet",['ana.emptyHow']="Pull a boss with the game's damage meter turned on. When the fight ends and you are out of combat, the pull appears here.",
+ ['ana.why.api']="This game client has no damage meter API, so the analyzer cannot read pulls.",['ana.why.off']="The game's damage meter is not available. Turn it on in the game options.",
+ ['ana.why.nosession']="The game's meter had no session for this pull. Is the damage meter turned on?",['ana.why.secret']="The meter still answered with hidden values after the fight, so nothing was saved.",['ana.why.error']="Reading the meter failed for this pull.",
+}
+local pt6={
+ ['ana.mode.planner']="Planejador",['ana.keys']="Abrir a análise do último pull",['ana.keysHint']="ou o botão Analisador no topo",['ana.keysKw']="analisador pull wipe mortes dano",['ana.mode.analyzer']="Analisador",
+ ['ana.view.overview']="Resumo",['ana.view.deaths']="Mortes",['ana.view.damage']="Dano recebido",['ana.view.mechanics']="Mecânicas",['ana.view.compare']="Comparar",
+ ['ana.title']="Análise do último pull",['ana.pulls']="Pulls recentes",['ana.none']="Nenhum pull salvo ainda",['ana.noPull']="Sem pull",['ana.pullN']="Pull {n}",['ana.pullTitle']="{boss}, pull {n}",
+ ['ana.delete']="Apagar este pull",['ana.clear']="Apagar todos os pulls",['ana.clearConfirm']="Apagar os {n} pulls salvos",
+ ['ana.saved']="pull {n} de {boss} salvo para a análise (/dynplan analyzer).",
+ ['ana.kill']="Kill",['ana.wipe']="Wipe",['ana.wipeAt']="Wipe em {p}",['ana.lasted']="{t} de luta",['ana.phaseEst']="chegou à fase {p} (estimativa pelo mapa de fases do plano)",
+ ['ana.diff.14']="Normal",['ana.diff.15']="Heroico",['ana.diff.16']="Mítico",['ana.diff.17']="Localizador de Raides",['ana.diff.other']="Outra dificuldade",
+ ['ana.t.deaths']="Mortes",['ana.t.taken']="Dano recebido",['ana.t.avoid']="Dano evitável",['ana.t.ints']="Interrupções",
+ ['ana.findings']="O que olhar primeiro",['ana.f.none']="Nada se destaca no medidor neste pull.",
+ ['ana.f.first']="Primeira morte: {who} em {t}, morto por {spell}.",['ana.f.firstNoKb']="Primeira morte: {who} em {t}.",
+ ['ana.f.early']="{n} jogadores morreram mais de 15 s antes do fim do pull.",
+ ['ana.f.avoid']="Dano evitável mais caro: {spell}, {amt} em {n} jogadores, mais em {who}.",
+ ['ana.f.player']="Quem mais tomou dano evitável: {who}, {amt}.",
+ ['ana.f.cover']="{n} de {all} mortes aconteceram sem cooldown de raide planejado ativo.",
+ ['ana.f.deadly']="{n} feitiços marcados como mortais pelo jogo atingiram a raide.",
+ ['ana.axis']="Linha do tempo do pull",['ana.axisSub']="mortes no tempo real; cooldowns de raide onde o plano aberto os coloca",
+ ['ana.lane.phases']="Fases (plano)",['ana.lane.deaths']="Mortes",['ana.lane.planned']="CDs de raide planejados",
+ ['ana.noTimes']="O medidor do jogo dá totais de dano, não tempos, por isso o dano aparece em Dano recebido e Mecânicas, e não nesta linha do tempo.",
+ ['ana.plannedAt']="planejado em {t}",['ana.notReached']="Não alcançado: o pull acabou antes.",
+ ['ana.seen']="Aparece no medidor de cura ou absorção deste jogador.",['ana.noTrace']="Sem rastro no medidor de cura (pode ter sido usado: nem todo cooldown cura).",
+ ['ana.coverLine']="Cobertura planejada naquele momento: {c}",['ana.noCover']="nenhuma planejada",
+ ['ana.deathsSub']="{n} mortes, em ordem",['ana.noDeaths']="Ninguém morreu neste pull.",
+ ['ana.deathsNote']="Passe o mouse numa morte para ver os últimos golpes. Uma linha por jogador: o jogo guarda só a última morte de quem foi revivido.",
+ ['ana.c.time']="Tempo",['ana.c.player']="Jogador",['ana.c.kb']="Golpe fatal",['ana.c.cover']="Cobertura planejada",['ana.c.ints']="Interrupções",['ana.c.disp']="Dissipações",
+ ['ana.c.pull']="Pull",['ana.c.result']="Resultado",['ana.c.dur']="Duração",['ana.c.phase']="Fase",['ana.c.deaths']="Mortes",['ana.c.first']="Primeira morte",['ana.c.avoid']="Evitável",['ana.c.top']="Maior evitável",
+ ['ana.melee']="Corpo a corpo",['ana.kb']="(golpe fatal)",['ana.hpLeft']="{p} de vida antes",['ana.overkill']="{n} de excesso",['ana.noRecap']="Sem resumo desta morte",
+ ['ana.byAbility']="Por habilidade",['ana.byAbilitySub']="pull inteiro",['ana.byPlayer']="Por jogador",['ana.byPlayerSub']="linha vermelha: parte evitável",
+ ['ana.tag.avoid']="evitável",['ana.tag.deadly']="mortal",['ana.hitN']="{n} atingidos",['ana.avoidN']="{n} evitável",['ana.more']="e mais {n}",
+ ['ana.mechSub']="dano evitável por feitiço e quem tomou (totais: o jogo não dá tempos nem contagem de golpes)",
+ ['ana.mechTotal']="{n} jogadores, {amt}",['ana.noAvoid']="Nenhum dano evitável neste pull.",
+ ['ana.tip.ground']="Ficou na poça: saia das poças mais cedo.",['ana.tip.area']="Não saiu da área a tempo.",['ana.tip.soak']="Golpe dividido: valores altos por pessoa indicam poucos absorvendo.",
+ ['ana.tip.tank']="Golpe no tanque: confira a troca e o cooldown do tanque.",['ana.tip.raid']="Dano na raide: cura e cooldowns de raide.",['ana.tip.avoid']="O jogo marca este dano como evitável.",
+ ['ana.intTitle']="Interrupções e dissipações",['ana.intSub']="contagem por jogador; o jogo não diz aos addons quais conjurações passaram",
+ ['ana.noInts']="Nenhuma interrupção ou dissipação contada, e nenhum kicker no plano.",['ana.kicker']="na ordem de kicks do plano",
+ ['ana.cmpSub']="{n} pulls recentes deste boss e dificuldade; clique num para abrir",
+ ['ana.locked']="Bloqueado em combate",['ana.lockedSub']="A análise lê o medidor do jogo quando a luta acaba.",
+ ['ana.emptyTitle']="Nenhum pull ainda",['ana.emptyHow']="Puxe um boss com o medidor de dano do jogo ligado. Quando a luta acabar e você sair de combate, o pull aparece aqui.",
+ ['ana.why.api']="Este cliente do jogo não tem a API do medidor de dano, então a análise não consegue ler pulls.",['ana.why.off']="O medidor de dano do jogo não está disponível. Ligue-o nas opções do jogo.",
+ ['ana.why.nosession']="O medidor do jogo não tinha sessão para este pull. O medidor de dano está ligado?",['ana.why.secret']="O medidor ainda respondeu com valores ocultos depois da luta, então nada foi salvo.",['ana.why.error']="A leitura do medidor falhou neste pull.",
+}
+for key,value in pairs(en6) do A.Locales.en[key]=value end
+for key,value in pairs(pt6) do A.Locales['pt-BR'][key]=value end
+local en7={
+ ['ana.import']="Import pull",['ana.fromLog']="from log",['ana.logShort']="log",
+ ['ana.imp.title']="Import a pull from a combat log",
+ ['ana.imp.help']="On your PC run tools\\Import last pull.bat from the addon's GitHub page (or py tools\\log2pull.py). It copies the last boss pull of your newest combat log. Paste it below. A long pull comes in parts: paste them one at a time, in any order.",
+ ['ana.imp.go']="Import",['ana.imp.part']="Part {got} of {of} received. Paste part {next}.",
+ ['ana.imp.empty']="Paste the text from log2pull first.",['ana.imp.bad']="This is not a pull from log2pull. Copy the whole line, starting with DPL1/.",
+ ['ana.imp.version']="This pull was made by a newer log2pull. Update the addon.",['ana.imp.check']="Part {i} of {n} arrived damaged or cut short. Copy it again, the whole line.",
+ ['ana.imp.done']="Dynamic Planner: pull {n} of {boss} imported from the log.",['ana.imp.again']="Dynamic Planner: pull {n} of {boss} was already imported; opened it.",
+ ['ana.lane.damage']="Raid damage taken",['ana.lane.used']="Raid CDs cast",['ana.castAt']="cast at {t}",
+ ['ana.logTimes']="From the combat log: damage, cooldown casts and deaths are at their real times. Phases still follow the planner's phase map.",
+ ['ana.activeLine']="Raid cooldowns active: {c}",['ana.noActive']="none cast and active",['ana.c.active']="Raid CDs active (cast)",
+ ['ana.usedAt']="Cast at {t} in this pull.",['ana.notUsed']="Not cast in this pull.",['ana.notInPull']="This player is not in the pull.",
+ ['ana.savesLine']="Defensives and externals in the last 60 s: {c}",['ana.noSaves']="none",
+ ['ana.deathsNoteLog']="From the combat log: every death, with the last hits and health left. Hover a death for planned cover and defensives.",
+ ['ana.hitTimes']="Hit at {t}",['ana.intOrder']="Interrupts in order",['ana.intOrderSub']="{n} interrupts, with the spell each one stopped",
+ ['ana.intSubLog']="counts per player, from the combat log",
+}
+local pt7={
+ ['ana.import']="Importar pull",['ana.fromLog']="do log",['ana.logShort']="log",
+ ['ana.imp.title']="Importar um pull de um log de combate",
+ ['ana.imp.help']="No PC rode tools\\Import last pull.bat da página do addon no GitHub (ou py tools\\log2pull.py). Ele copia o último pull de chefe do seu log de combate mais recente. Cole abaixo. Um pull longo vem em partes: cole uma de cada vez, em qualquer ordem.",
+ ['ana.imp.go']="Importar",['ana.imp.part']="Parte {got} de {of} recebida. Cole a parte {next}.",
+ ['ana.imp.empty']="Cole primeiro o texto do log2pull.",['ana.imp.bad']="Isto não é um pull do log2pull. Copie a linha inteira, começando por DPL1/.",
+ ['ana.imp.version']="Este pull foi feito por um log2pull mais novo. Atualize o addon.",['ana.imp.check']="A parte {i} de {n} chegou danificada ou cortada. Copie de novo, a linha inteira.",
+ ['ana.imp.done']="Dynamic Planner: pull {n} de {boss} importado do log.",['ana.imp.again']="Dynamic Planner: o pull {n} de {boss} já tinha sido importado; aberto.",
+ ['ana.lane.damage']="Dano recebido pela raide",['ana.lane.used']="CDs de raide usados",['ana.castAt']="usado em {t}",
+ ['ana.logTimes']="Do log de combate: dano, cooldowns usados e mortes estão no tempo real. As fases ainda seguem o mapa de fases do planejador.",
+ ['ana.activeLine']="Cooldowns de raide ativos: {c}",['ana.noActive']="nenhum usado e ativo",['ana.c.active']="CDs de raide ativos (usados)",
+ ['ana.usedAt']="Usado em {t} neste pull.",['ana.notUsed']="Não usado neste pull.",['ana.notInPull']="Este jogador não está no pull.",
+ ['ana.savesLine']="Defensivos e externos nos últimos 60 s: {c}",['ana.noSaves']="nenhum",
+ ['ana.deathsNoteLog']="Do log de combate: todas as mortes, com os últimos golpes e a vida restante. Passe o mouse numa morte para ver cobertura planejada e defensivos.",
+ ['ana.hitTimes']="Acertou em {t}",['ana.intOrder']="Interrupções em ordem",['ana.intOrderSub']="{n} interrupções, com a magia que cada uma parou",
+ ['ana.intSubLog']="contagem por jogador, do log de combate",
+}
+for key,value in pairs(en7) do A.Locales.en[key]=value end
+for key,value in pairs(pt7) do A.Locales['pt-BR'][key]=value end
+local en8={
+ ['ana.zoomIn']="Zoom in",['ana.zoomOut']="Zoom out",['ana.fit']="Fit pull",['ana.zoomAll']="Whole pull",['ana.zoomRange']="{a} to {b}",
+ ['ana.zoomHelp']="Ctrl+wheel over the timeline zooms where the cursor is; drag or Shift+wheel pans.",
+ ['ana.scaleTop']="top {v}/s",['ana.binTotal']="Raid damage taken: {v}",['ana.perSec']="({v}/s)",['ana.binNone']="No raid damage taken",
+}
+local pt8={
+ ['ana.zoomIn']="Aproximar",['ana.zoomOut']="Afastar",['ana.fit']="Pull inteiro",['ana.zoomAll']="Pull inteiro",['ana.zoomRange']="{a} a {b}",
+ ['ana.zoomHelp']="Ctrl+roda sobre a linha do tempo aproxima onde está o cursor; arraste ou use Shift+roda para mover.",
+ ['ana.scaleTop']="topo {v}/s",['ana.binTotal']="Dano recebido pela raide: {v}",['ana.perSec']="({v}/s)",['ana.binNone']="Nenhum dano recebido pela raide",
+}
+for key,value in pairs(en8) do A.Locales.en[key]=value end
+for key,value in pairs(pt8) do A.Locales['pt-BR'][key]=value end
+local en9={
+ ['ana.card.lastHits']="Last hits",['ana.card.hpBefore']="health before",['ana.card.earlier']="+{n} earlier hits",
+ ['ana.card.planned']="Planned for this moment (open plan)",['ana.card.nothingPlanned']="Nothing planned here.",
+ ['ana.card.active']="Raid cooldowns active (cast in this pull)",['ana.card.noneActive']="None was cast and still active.",
+ ['ana.card.saves']="Defensives and externals, last 60 s",['ana.card.noSaves']="None used.",
+ ['ana.card.friendly']="The source is a raid member: usually mind control by the boss, or friendly fire.",
+ ['ana.card.hits']="Hits",['ana.card.playersN']="on {n} players",['ana.card.share']="Share of all damage taken",['ana.card.overkill']="Overkill",
+ ['ana.card.hitAt']="Hit at",['ana.card.players']="Players hit",['ana.card.more']="+{n} more",
+ ['ana.card.ofSpell']="Share of this ability",['ana.card.allAvoid']="All avoidable damage taken",
+ ['ana.card.plannedAt']="Planned at",['ana.card.castAt']="Cast at",['ana.card.lasts']="Lasts",['ana.card.inPull']="In this pull",
+ ['ana.card.top']="Top abilities",['ana.card.bossLeft']="Boss health at the end",
+ ['ana.card.thisPull']="This is the open pull. Click another row to compare.",['ana.card.openPull']="Differences are against the open pull. Click to open this one.",
+}
+local pt9={
+ ['ana.card.lastHits']="Últimos golpes",['ana.card.hpBefore']="vida antes",['ana.card.earlier']="+{n} golpes anteriores",
+ ['ana.card.planned']="Planejado para este momento (plano aberto)",['ana.card.nothingPlanned']="Nada planejado aqui.",
+ ['ana.card.active']="Cooldowns de raide ativos (usados neste pull)",['ana.card.noneActive']="Nenhum foi usado e ainda estava ativo.",
+ ['ana.card.saves']="Defensivos e externos, últimos 60 s",['ana.card.noSaves']="Nenhum usado.",
+ ['ana.card.friendly']="A origem é um membro da raide: em geral controle mental do boss, ou fogo amigo.",
+ ['ana.card.hits']="Acertos",['ana.card.playersN']="em {n} jogadores",['ana.card.share']="Parte de todo o dano recebido",['ana.card.overkill']="Dano excedente",
+ ['ana.card.hitAt']="Acertou em",['ana.card.players']="Jogadores atingidos",['ana.card.more']="+{n} a mais",
+ ['ana.card.ofSpell']="Parte desta habilidade",['ana.card.allAvoid']="Todo o dano evitável recebido",
+ ['ana.card.plannedAt']="Planejado em",['ana.card.castAt']="Usado em",['ana.card.lasts']="Dura",['ana.card.inPull']="Neste pull",
+ ['ana.card.top']="Principais habilidades",['ana.card.bossLeft']="Vida do boss no fim",
+ ['ana.card.thisPull']="Este é o pull aberto. Clique em outra linha para comparar.",['ana.card.openPull']="As diferenças são em relação ao pull aberto. Clique para abrir este.",
+}
+for key,value in pairs(en9) do A.Locales.en[key]=value end
+for key,value in pairs(pt9) do A.Locales['pt-BR'][key]=value end
+local en10={
+ ['ana.seeAll']="See all",['ana.col.noDeaths']="No deaths",['ana.col.more']="+{n} more in Deaths",
+ ['ana.col.covered']="covered",['ana.col.uncovered']="no cover",['ana.col.noTimes']="meter totals",
+ ['ana.col.byAbility']="Ability",['ana.col.byPlayer']="Player",['ana.col.noDamage']="No damage recorded",
+ ['ana.col.avoidTitle']="Avoidable hits",['ana.col.noAvoid']="No avoidable damage",['ana.col.noKick']="assigned to kick, no interrupts",
+ ['ana.col.ints']="Interrupts {n}, dispels {d}",['ana.col.avoidHits']="{n} avoidable hits",['ana.card.byAbility']="By ability",
+}
+local pt10={
+ ['ana.seeAll']="Ver tudo",['ana.col.noDeaths']="Nenhuma morte",['ana.col.more']="+{n} em Mortes",
+ ['ana.col.covered']="coberta",['ana.col.uncovered']="sem cobertura",['ana.col.noTimes']="totais do medidor",
+ ['ana.col.byAbility']="Habilidade",['ana.col.byPlayer']="Jogador",['ana.col.noDamage']="Nenhum dano registrado",
+ ['ana.col.avoidTitle']="Golpes evitáveis",['ana.col.noAvoid']="Nenhum dano evitável",['ana.col.noKick']="escalado para interromper, nenhuma interrupção",
+ ['ana.col.ints']="Interrupções {n}, dissipações {d}",['ana.col.avoidHits']="{n} golpes evitáveis",['ana.card.byAbility']="Por habilidade",
+}
+for key,value in pairs(en10) do A.Locales.en[key]=value end
+for key,value in pairs(pt10) do A.Locales['pt-BR'][key]=value end
+local en11={
+ ['ana.flt.btn']="Filter",['ana.flt.btnN']="Filter, {n} hidden",['ana.flt.title']="Analyzer filter",
+ ['ana.flt.tSpells']="Player spells",['ana.flt.tDamage']="Damage taken",['ana.flt.tPlayers']="Players",
+ ['ana.flt.cap.spells']="Cooldowns cast or planned in this pull",['ana.flt.cap.damage']="Abilities that hit the raid",['ana.flt.cap.players']="Players in this pull",
+ ['ana.flt.empty']="Nothing to filter in this pull.",['ana.flt.hidden']="hidden",['ana.flt.scroll']="{a} to {b} of {n}, scroll for more",
+ ['ana.flt.counts']="{t}: {c} cast, {p} planned",['ana.flt.ty.raid']="raid",['ana.flt.ty.external']="external",['ana.flt.ty.personal']="personal",
+ ['ana.flt.nHidden']="{n} hidden by the filter",
+ ['ana.card.vsPlan']="Against the plan",
+ ['ana.plan.late']="Planned {p}, used {u}: {d} s late",['ana.plan.early']="Planned {p}, used {u}: {d} s early",
+ ['ana.plan.ontime']="Planned {p}, used {u}: on time (within {tol} s)",
+ ['ana.plan.notUsed']="Planned {p}: not used (no cast by this player within {w} s)",
+ ['ana.plan.noTrace']="Planned {p}: no trace in the meter. The meter has no cast times, so this can't tell late from not used.",
+ ['ana.plan.seenMeter']="Planned {p}: seen in the meter, but the meter has no cast times.",
+ ['ana.plan.notReached']="Planned {p}: the pull ended first.",['ana.plan.notInPull']="Planned {p}: this player is not in the pull.",
+ ['ana.plan.unplanned']="Not matched to a planned slot (none for this player and spell within {w} s).",
+ ['ana.card.ofRaid']="{p} of the raid's damage taken",['ana.card.roleAvg']="{r} average",['ana.card.died']="Died",
+ ['ana.role.tank']="Tank",['ana.role.healer']="Healer",['ana.role.melee']="Melee",['ana.role.ranged']="Ranged",
+}
+local pt11={
+ ['ana.flt.btn']="Filtro",['ana.flt.btnN']="Filtro, {n} ocultos",['ana.flt.title']="Filtro do analisador",
+ ['ana.flt.tSpells']="Magias de jogador",['ana.flt.tDamage']="Dano recebido",['ana.flt.tPlayers']="Jogadores",
+ ['ana.flt.cap.spells']="Cooldowns usados ou planejados neste pull",['ana.flt.cap.damage']="Habilidades que atingiram a raide",['ana.flt.cap.players']="Jogadores neste pull",
+ ['ana.flt.empty']="Nada para filtrar neste pull.",['ana.flt.hidden']="oculto",['ana.flt.scroll']="{a} a {b} de {n}, role para ver mais",
+ ['ana.flt.counts']="{t}: {c} usados, {p} planejados",['ana.flt.ty.raid']="raide",['ana.flt.ty.external']="externo",['ana.flt.ty.personal']="pessoal",
+ ['ana.flt.nHidden']="{n} ocultos pelo filtro",
+ ['ana.card.vsPlan']="Em relação ao plano",
+ ['ana.plan.late']="Planejado {p}, usado {u}: {d} s atrasado",['ana.plan.early']="Planejado {p}, usado {u}: {d} s adiantado",
+ ['ana.plan.ontime']="Planejado {p}, usado {u}: no tempo (até {tol} s)",
+ ['ana.plan.notUsed']="Planejado {p}: não usado (nenhum uso deste jogador em até {w} s)",
+ ['ana.plan.noTrace']="Planejado {p}: sem rastro no medidor. O medidor não tem horários de uso, então não dá para separar atrasado de não usado.",
+ ['ana.plan.seenMeter']="Planejado {p}: aparece no medidor, mas o medidor não tem horários de uso.",
+ ['ana.plan.notReached']="Planejado {p}: o pull acabou antes.",['ana.plan.notInPull']="Planejado {p}: este jogador não está no pull.",
+ ['ana.plan.unplanned']="Sem par no plano (nenhum horário planejado deste jogador e magia em até {w} s).",
+ ['ana.card.ofRaid']="{p} do dano recebido pela raide",['ana.card.roleAvg']="Média de {r}",['ana.card.died']="Morreu",
+ ['ana.role.tank']="tank",['ana.role.healer']="healer",['ana.role.melee']="corpo a corpo",['ana.role.ranged']="à distância",
+}
+for key,value in pairs(en11) do A.Locales.en[key]=value end
+for key,value in pairs(pt11) do A.Locales['pt-BR'][key]=value end

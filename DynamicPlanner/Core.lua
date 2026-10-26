@@ -221,6 +221,11 @@ function A.Toggle()
  if not A.UI.window then A.UI.CreateWindow() end
  A.UI.window:SetShown(not A.UI.window:IsShown());if A.UI.window:IsShown() then A.UI.Render() end
 end
+function A.OpenAnalyzer()
+ if not A.Allowed() then A.Message('The planner is available out of combat.');return end
+ if not A.UI.window then A.UI.CreateWindow() end
+ A.UI.window:Show();if A.UI.Mode()~='analyzer' then A.UI.SetMode('analyzer') else A.UI.Render() end
+end
 local events=CreateFrame('Frame')
 events:RegisterEvent('ADDON_LOADED');events:RegisterEvent('PLAYER_LOGIN');events:RegisterEvent('PLAYER_REGEN_DISABLED');events:RegisterEvent('PLAYER_LOGOUT')
 events:SetScript('OnEvent',function(_,event,addon)
@@ -246,11 +251,12 @@ local Perf={on=false,stats={},orig={}};A.Perf=Perf
 local TARGETS={
  {'UI','Render'},{'UI','DrawTimeline'},{'UI','DrawPlayers'},{'UI','DrawRoster'},{'UI','RefreshProblems'},{'UI','LayoutHeader'},
  {'UI','SpellTip'},{'UI','ShowInspector'},{'UI','DrawFilters'},{'UI','DrawCoverage'},{'UI','DrawShortcuts'},
+ {'UI','RenderAnalyzer'},{'UI','DrawAnalyzer'},{'Analyzer','Snapshot'},
  {'UI','ToggleFilters'},{'UI','ToggleCoverage'},{'UI','Shortcuts'},{'UI','Kicks'},{'UI','RaidGrid'},{'UI','Menu'},
  {'Model','conflicts'},{'Model','coverage'},{'Model','problems'},{'Model','preStart'},{'Model','railOrdered'},
  {'root','Save'},{'root','Import'},{'root','Edit'},
 }
-local function owner(where) if where=='UI' then return A.UI elseif where=='Model' then return A.Model else return A end end
+local function owner(where) if where=='UI' then return A.UI elseif where=='Model' then return A.Model elseif where=='Analyzer' then return A.Analyzer else return A end end
 local function clock() return debugprofilestop and debugprofilestop() or (GetTime() or 0)*1000 end
 function Perf.Start()
  if Perf.on then return end
@@ -258,7 +264,7 @@ function Perf.Start()
  for _,t in ipairs(TARGETS) do
   local tbl,name=owner(t[1]),t[2];local fn=tbl and tbl[name]
   if type(fn)=='function' then
-   local label=(t[1]=='root' and 'A' or t[1]=='UI' and 'U' or 'M')..'.'..name
+   local label=(t[1]=='root' and 'A' or t[1]=='UI' and 'U' or t[1]=='Analyzer' and 'AN' or 'M')..'.'..name
    Perf.orig[#Perf.orig+1]={tbl,name,fn}
    tbl[name]=function(...)
     local st=Perf.stats[label];if not st then st={n=0,ms=0,max=0,kb=0};Perf.stats[label]=st end
@@ -295,5 +301,7 @@ end
 SLASH_DYNAMICPLANNER1='/dynplan'
 SlashCmdList.DYNAMICPLANNER=function(msg)
  local cmd,arg=(msg or ''):lower():match('^%s*(%S*)%s*(%S*)')
- if cmd=='perf' then Perf.Command(arg) else A.Toggle() end
+ if cmd=='perf' then Perf.Command(arg)
+ elseif cmd=='analyzer' or cmd=='analisador' or cmd=='ana' then A.OpenAnalyzer()
+ else A.Toggle() end
 end

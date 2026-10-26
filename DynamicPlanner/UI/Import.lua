@@ -48,7 +48,8 @@ function U.DrawImport()
   t.text:ClearAllPoints();t.text:SetPoint('LEFT',8,0);t.text:SetWidth(300);U.Font(t.text,12,'mono');t.text:SetText(n..'  |cff8a7f8d'..A.T('addon.linesN',{n=counts[n]})..(how=='nick' and ', '..A.T('imp.nickKnown') or how=='first' and ', '..A.T('imp.nickGuess') or '')..'|r')
   local cur=to=='' and A.T('imp.drop') or to=='+' and A.T('addon.newBench') or (function() local q;for _,x in ipairs(roster) do if x.name==to then q=x end end;return classHex(q)..to..'|r' end)()
   local b=pool:get();b:SetPoint('TOPLEFT',320,-y);b:SetSize(w-320,26);U.Radius(b,4);b:SetBackdropColor(U.Color('panel-2'));b:SetBackdropBorderColor(U.Color('line'))
-  b.text:ClearAllPoints();b.text:SetPoint('LEFT',10,0);U.Font(b.text,12,'textMedium');b.text:SetText(cur..'  v')
+  b.text:ClearAllPoints();b.text:SetPoint('LEFT',10,0);U.Font(b.text,12,'textMedium');b.text:SetText(cur)
+  b.icon:SetTexture(U.ChevronTexture);b.icon:SetTexCoord(0,1,0,1);b.icon:SetSize(10,10);b.icon:ClearAllPoints();b.icon:SetPoint('RIGHT',-10,0);b.icon:SetVertexColor(U.Color('ink'));b.icon:Show()
   b:SetScript('OnClick',function(self)
    local items={{A.T('addon.newBench'),function() f.map[n]='+';U.DrawImport() end,checked=to=='+'},{A.T('imp.drop'),function() f.map[n]='';U.DrawImport() end,checked=to==''},{'',nil,divider=true},{A.T('imp.grpRaid'),nil,title=true}}
    local bench={}

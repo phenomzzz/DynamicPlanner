@@ -141,6 +141,7 @@ local SHORTCUTS={
  {'top','keys.zoom',nil,function() return 'Ctrl+'..M_('wheel')..'  '..A.T('keys.or')..'  + / -' end,'keys.kw.zoom'},
  {'top','keys.help',nil,function() return '?' end,'keys.kw.help'},
  {'top','pv.menu',nil,function() return 'N' end,'pv.kw'},
+ {'top','ana.keys','ana.keysHint',function() return '/dynplan analyzer' end,'ana.keysKw'},
  {'view','keys.pan','keys.panHint',function() return 'Shift+'..M_('wheel')..'  '..A.T('keys.or')..'  '..A.T('keys.k.Arrows') end,'keys.kw.pan'},
  {'view','keys.pan',nil,function() return M_('drag')..' '..T_('bossTrack')..'  '..A.T('keys.or')..'  '..M_('mdrag') end,'keys.kw.pan'},
  {'view','keys.zoom',nil,function() return 'Ctrl+'..M_('wheel')..'  '..A.T('keys.or')..'  + / -' end,'keys.kw.zoom'},
@@ -327,4 +328,92 @@ function U.DrawCoverage()
  end
  if #list>MAX then local c=caption(pool,A.T('addon.cvMore',{a=f.offset+1,b=math.min(#list,f.offset+MAX),n=#list}),16,y+2);y=y+22 end
  f:SetHeight(y+14)
+end
+local AN=A.Analyzer
+local function anaKey()
+ local n=UnitName and UnitName('player');local r=GetRealmName and GetRealmName()
+ if type(n)=='string' and type(r)=='string' then return n..'-'..r end;return 'default'
+end
+function U.AnaFilter()
+ A.db.anaFilter=A.db.anaFilter or {}
+ local k=anaKey();local f=A.db.anaFilter[k];if not f then f={spells={},players={}};A.db.anaFilter[k]=f end
+ f.spells=f.spells or {};f.players=f.players or {};return f
+end
+local function canonId(id) return (A.Aliases and A.Aliases[id]) or id end
+function U.AnaSpellOn(id) if not id then return true end;local s=U.AnaFilter().spells;return not (s[id] or s[canonId(id)]) end
+function U.AnaPlayerOn(n) if not n then return true end;return not U.AnaFilter().players[AN.Short(n):lower()] end
+function U.AnaHidden() local f=U.AnaFilter();local n=0;for _ in pairs(f.spells) do n=n+1 end;for _ in pairs(f.players) do n=n+1 end;return n end
+local function anaApply() if U.anaFilterBox and U.anaFilterBox:IsShown() then U.DrawAnaFilter() end;U.RenderAnalyzer() end
+function U.AnaFilterReset() local f=U.AnaFilter();f.spells={};f.players={};anaApply() end
+local function anaEntries(p,tab)
+ local out={}
+ if not p then return out end
+ if tab=='spells' then
+  local seen={};local order={raid=1,external=2,personal=3}
+  local function add(id,cast,plan)
+   local ty,cd=AN.CastType(id);if not cd then return end
+   local e=seen[cd.id];if not e then e={id=cd.id,label=cd.name,cast=0,plan=0,ty=ty,key=cd.id,kind='spell'};seen[cd.id]=e;out[#out+1]=e end
+   e.cast=e.cast+cast;e.plan=e.plan+plan
+  end
+  for _,c in ipairs(p.casts or {}) do add(c.id,1,0) end
+  for _,x in ipairs(AN.Planned(p)) do add(x.spellId,0,1) end
+  table.sort(out,function(a,b) if order[a.ty]~=order[b.ty] then return (order[a.ty] or 9)<(order[b.ty] or 9) end;return a.label<b.label end)
+  for _,e in ipairs(out) do e.sub=A.T('ana.flt.counts',{c=e.cast,p=e.plan,t=A.T('ana.flt.ty.'..(e.ty or 'raid'))}) end
+ elseif tab=='damage' then
+  for _,e in ipairs(p.spells or {}) do out[#out+1]={id=e.id,label=AN.SpellName(e.id,e.name),sub=A.UI.Num(e.total),key=e.id,kind='spell'} end
+ else
+  for _,pl in ipairs(p.players or {}) do local r,g,b=U.Color('class-'..tostring(pl.c or ''));if not A.Theme.colors['class-'..tostring(pl.c or '')] then r,g,b=U.Color('ink') end
+   out[#out+1]={label=AN.Short(pl.n),rgb={r,g,b},key=AN.Short(pl.n):lower(),kind='player',sub=A.UI.Num(pl.taken or 0)} end
+  table.sort(out,function(a,b) return a.label<b.label end)
+ end
+ return out
+end
+local ANA_ROWS=12
+function U.CreateAnaFilter(win)
+ local f=popover(win,440,300);U.anaFilterBox=f;f.tab='spells';f.offset=0
+ f.title=U.Label(f,'',16,-16,14,'textMedium')
+ f.reset=U.Button(f,'',0,0,0,function() U.AnaFilterReset() end,{key='fl.reset',height=24});f.reset:ClearAllPoints();f.reset:SetPoint('TOPRIGHT',-14,-12)
+ f.tabs={}
+ for _,t in ipairs({{'spells','ana.flt.tSpells'},{'damage','ana.flt.tDamage'},{'players','ana.flt.tPlayers'}}) do
+  local key=t[1];f.tabs[key]=U.Button(f,'',0,-46,0,function() f.tab=key;f.offset=0;U.DrawAnaFilter() end,{key=t[2],height=26})
+ end
+ f.all=U.Button(f,'',0,0,0,function() local fl=U.AnaFilter();for _,e in ipairs(anaEntries(AN.Selected(),f.tab)) do if e.kind=='spell' then fl.spells[e.key]=nil else fl.players[e.key]=nil end end;anaApply() end,{key='keys.all',height=24})
+ f.none=U.Button(f,'',0,0,0,function() local fl=U.AnaFilter();for _,e in ipairs(anaEntries(AN.Selected(),f.tab)) do if e.kind=='spell' then fl.spells[e.key]=true else fl.players[e.key]=true end end;anaApply() end,{key='fl.none',height=24})
+ f:EnableMouseWheel(true);f:SetScript('OnMouseWheel',function(_,d) f.offset=math.max(0,f.offset-d*2);U.DrawAnaFilter() end)
+end
+function U.ToggleAnaFilter(anchor)
+ local f=U.anaFilterBox;if f:IsShown() then f:Hide();return end
+ f.anchor=anchor;f:ClearAllPoints();f:SetPoint('TOPLEFT',anchor,'BOTTOMLEFT',0,-6);f.offset=0;f:Show();U.DrawAnaFilter()
+end
+function U.DrawAnaFilter()
+ local f=U.anaFilterBox;if not f or not f:IsShown() then return end
+ local pool=f.pool;pool:release()
+ f.title:SetText(A.T('ana.flt.title'))
+ local dirty=U.AnaHidden()>0;f.reset:SetEnabled(dirty);f.reset.text:SetTextColor(U.Color(dirty and 'ink' or 'ink-3'))
+ local x=16;for _,key in ipairs({'spells','damage','players'}) do local b=f.tabs[key];b:ClearAllPoints();b:SetPoint('TOPLEFT',x,-46);x=x+b:GetWidth()+4;U.Active(b,f.tab==key) end
+ local W=f:GetWidth()-32;local y=86
+ local list=anaEntries(AN.Selected(),f.tab);local fl=U.AnaFilter()
+ caption(pool,A.T('ana.flt.cap.'..f.tab),16,y)
+ f.none:ClearAllPoints();f.none:SetPoint('TOPRIGHT',-16,-(y-4));f.all:ClearAllPoints();f.all:SetPoint('RIGHT',f.none,'LEFT',-4,0)
+ f.all:SetShown(#list>0);f.none:SetShown(#list>0)
+ y=y+28
+ if #list==0 then caption(pool,A.T('ana.flt.empty'),16,y);y=y+24 end
+ local rows=math.ceil(#list/2);local maxOff=math.max(0,rows-ANA_ROWS);if f.offset>maxOff then f.offset=maxOff end
+ local tw=(W-8)/2
+ for i=f.offset*2+1,math.min(#list,(f.offset+ANA_ROWS)*2) do
+  local e=list[i];local col=(i-1)%2;local on=(e.kind=='spell' and not fl.spells[e.key]) or (e.kind=='player' and not fl.players[e.key])
+  local t=pool:get();t:SetPoint('TOPLEFT',16+col*(tw+8),-y);t:SetSize(tw,30);U.Radius(t,6);t.anaKey=e.key
+  t:SetBackdropColor(U.Color(on and 'panel-2' or 'ground'));t:SetBackdropBorderColor(U.ColorA(on and 'ink' or 'line',on and 0.45 or 1))
+  local tx=8;if e.id then t.icon:SetTexture(U.Icon(e.id));t.icon:SetSize(18,18);t.icon:ClearAllPoints();t.icon:SetPoint('LEFT',6,0);t.icon:SetDesaturated(not on);t.icon:Show();tx=30 end
+  t.text:ClearAllPoints();t.text:SetPoint('LEFT',tx,0);t.text:SetWidth(tw-tx-78);U.Font(t.text,12,'textMedium');t.text:SetText(e.label or '')
+  if e.rgb and on then t.text:SetTextColor(e.rgb[1],e.rgb[2],e.rgb[3]) else t.text:SetTextColor(U.Color(on and 'ink' or 'ink-3')) end
+  if not t.count then t.count=U.Text(t);U.Line(t.count) end
+  t.count:ClearAllPoints();t.count:SetPoint('RIGHT',-8,0);t.count:SetWidth(74);t.count:SetJustifyH('RIGHT');U.Font(t.count,10);t.count:SetTextColor(U.Color('ink-3'));t.count:SetText(on and (e.sub or '') or A.T('ana.flt.hidden'));t.count:Show()
+  t:SetScript('OnClick',function() if e.kind=='spell' then fl.spells[e.key]=on or nil else fl.players[e.key]=on or nil end;anaApply() end)
+  t:SetScript('OnEnter',function(self) self:SetBackdropBorderColor(U.ColorA('ink',0.7)) end)
+  t:SetScript('OnLeave',function(self) self:SetBackdropBorderColor(U.ColorA(on and 'ink' or 'line',on and 0.45 or 1)) end)
+  if col==1 or i==#list then y=y+34 end
+ end
+ if maxOff>0 then caption(pool,A.T('ana.flt.scroll',{a=f.offset*2+1,b=math.min(#list,(f.offset+ANA_ROWS)*2),n=#list}),16,y);y=y+20 end
+ f:SetHeight(y+12)
 end

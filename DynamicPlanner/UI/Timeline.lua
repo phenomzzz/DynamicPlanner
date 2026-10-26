@@ -161,7 +161,7 @@ local function alertFields(a)
  return parts and table.concat(parts,', ')
 end
 U.CarriesNote=carriesNote
-local LANE_W,WINDOW,LANE_X,MARK,CHIP=300,15,72,18,20
+local LANE_W,WINDOW,LANE_X,MARK,CHIP,CARD_W=300,15,72,18,20,420
 local NOTE_W,NOTE_MIN=160,28
 local LANES={'insp.boss','insp.player','insp.allies'}
 local ALLY_CATS={heal=1,raiddr=1,raidmob=1,externals=1,raidutil=1}
@@ -172,10 +172,10 @@ local function anchorText(t)
  local d=string.format('%.1f',math.max(0,t-best.start));if d=='-0.0' then d='0.0' end
  return A.T('anchor',{d=d,spell=best.name,n=best.n})
 end
-local function inspector(a,t,snappedTo)
+local function inspector(a,t,snappedTo,nowX)
  local f=U.inspector
  if not f then
-  f=CreateFrame('Frame',nil,U.window);U.Surface(f,'panel','border',10);f:SetSize(420,214);f:SetFrameStrata('TOOLTIP');f:EnableMouse(false)
+  f=CreateFrame('Frame',nil,U.window);U.Surface(f,'panel','border',10);f:SetSize(CARD_W,214);f:SetFrameStrata('TOOLTIP');f:EnableMouse(false)
   f.icon=f:CreateTexture(nil,'ARTWORK');f.icon:SetSize(30,30);f.icon:SetPoint('TOPLEFT',12,-12);f.icon:SetTexCoord(0.08,0.92,0.08,0.92)
   f.name=U.Label(f,'',50,-12,14,'textMedium');f.who=U.Label(f,'',50,-30,12,'textMedium')
   f.prev=U.Label(f,'',12,-58,11,'mono');f.prev:SetTextColor(U.Color('ink-2'))
@@ -224,21 +224,24 @@ local function inspector(a,t,snappedTo)
  elseif cd.cooldown and cd.cooldown>0 then local others={};for _,b in ipairs(same) do local bt=absT(b);if bt then others[#others+1]={t=bt} end end
   local ps=M.preStart(cd,t,others);if ps then warn=A.T('pre.note',{n=math.max(1,math.floor(t-ps+0.5))}) end end
  f.warn:SetShown(warn~=nil);if warn then f.warn.text:SetText(warn);f.warn:SetWidth(f.warn.text:GetUnboundedStringWidth()+18) end
- local function px(bt) return LANE_X+(bt-t+WINDOW)/(WINDOW*2)*LANE_W end
+ nowX=nowX or (LANE_X+LANE_W/2)
+ local laneL,laneR=LANE_X,math.min(CARD_W-12,math.max(LANE_X+LANE_W,nowX+8))
+ local function px(bt) return nowX+(bt-t)/(WINDOW*2)*LANE_W end
+ local function inLanes(bt) local v=px(bt);return v>=laneL and v<=laneR end
  local marks=f.marks;local n=0
  local function add(bt,icon,color)
   n=n+1;local m=marks[n];if not m then m={};marks[n]=m end;m.t=bt;m.icon=icon;m.color=color
  end
  for i,key in ipairs(LANES) do
   local y=laneTop+(i-1)*28;local cy=y+11;n=0
-  local rail=f.pool:get();rail:SetPoint('TOPLEFT',LANE_X,-cy);rail:SetSize(LANE_W,1);U.Radius(rail,0);rail:SetBackdropColor(U.Color('line'));rail:SetBackdropBorderColor(0,0,0,0);rail:EnableMouse(false)
+  local rail=f.pool:get();rail:SetPoint('TOPLEFT',laneL,-cy);rail:SetSize(laneR-laneL,1);U.Radius(rail,0);rail:SetBackdropColor(U.Color('line'));rail:SetBackdropBorderColor(0,0,0,0);rail:EnableMouse(false)
   local label=f.pool:get();label:SetPoint('TOPLEFT',12,-y);label:SetSize(LANE_X-16,22);label:SetBackdrop(nil);label:EnableMouse(false)
   label.text:ClearAllPoints();label.text:SetPoint('LEFT',0,0);label.text:SetJustifyH('LEFT');label.text:SetText(A.T(key));label.text:SetTextColor(U.Color('ink-3'));U.Font(label.text,11,'textMedium')
   if i==1 then
-   for _,ab in ipairs(A.boss.abilities) do if ab.importance=='core' or A.view.showAll then for _,c in ipairs(ab.casts) do if math.abs(c.start-t)<=WINDOW then add(c.start,U.Icon(c.spell),'tl-cat-'..(ab.category or 'event')) end end end end
+   for _,ab in ipairs(A.boss.abilities) do if ab.importance=='core' or A.view.showAll then for _,c in ipairs(ab.casts) do if inLanes(c.start) then add(c.start,U.Icon(c.spell),'tl-cat-'..(ab.category or 'event')) end end end end
   else
    for _,b in ipairs(A.model.plan.lines) do if b~=a then local bt=absT(b)
-    if bt and math.abs(bt-t)<=WINDOW then
+    if bt and inLanes(bt) then
      if i==2 and b.tag==a.tag then add(bt,U.Icon(b.spellId),'ink-2')
      elseif i==3 and b.tag~=a.tag and b.spellId and A.CD[b.spellId] and ALLY_CATS[A.CD[b.spellId].cat] then
       local q;for _,p in ipairs(A.model.plan.roster or {}) do if p.name==b.tag then q=p end end;add(bt,U.Icon(b.spellId),q and q.classToken and 'class-'..q.classToken or 'info') end
@@ -261,7 +264,8 @@ local function inspector(a,t,snappedTo)
    k=last+1
   end
  end
- local center=f.pool:get();center:SetPoint('TOPLEFT',LANE_X+LANE_W/2-1,-(laneTop-4));center:SetSize(2,86);center:SetBackdropColor(U.Color('tl-scrub'));center:SetBackdropBorderColor(0,0,0,0);center:EnableMouse(false);center:SetFrameLevel(f:GetFrameLevel()+6)
+ f.nowX=nowX
+ local center=f.pool:get();center:SetPoint('TOPLEFT',nowX-1,-(laneTop-4));center:SetSize(2,86);center:SetBackdropColor(U.Color('tl-scrub'));center:SetBackdropBorderColor(0,0,0,0);center:EnableMouse(false);center:SetFrameLevel(f:GetFrameLevel()+6)
  f:Show()
 end
 function U.CancelDrag()
@@ -619,16 +623,31 @@ function U.JumpToPlayer(p)
   U.scroller:Start();C_Timer.After(1.6,function() U.flash=nil;if U.window and U.window:IsShown() then drawPlayers() end end);return
  end end
 end
+local function cardPlacement(xx)
+ local w=U.window;local W=w:GetWidth()
+ local l1,l0=U.playerCanvas:GetLeft(),w:GetLeft()
+ local left=(l1 and l0) and (l1-l0) or 0
+ if left<=0 then left=24+(U.ROSTER_WIDTH or 0) end
+ local minX,maxX=12-left,W-12-left-CARD_W;if maxX<minX then maxX=minX end
+ local cardX=math.floor(math.max(minX,math.min(maxX,xx-(LANE_X+LANE_W/2)))+0.5)
+ local nowX=math.max(LANE_X,math.min(CARD_W-12,xx-cardX))
+ return cardX,nowX
+end
+U.CardPlacement=cardPlacement
 function U.ShowInspector(a,t,chip)
- inspector(a,t,U.drag and U.drag.what)
+ local bx=chip and chip.dpBox
+ local cardX,nowX
+ if bx then cardX,nowX=cardPlacement(x(t)) end
+ inspector(a,t,U.drag and U.drag.what,nowX)
  local f=U.inspector;if not f or not chip then return end
  local side=U.drag and U.drag.side
  if not side then
   local top=chip:GetTop() or 0;local wtop=U.canvas:GetBottom() or 0
   side=(top+8+f:GetHeight()<=wtop) and 'above' or 'below';if U.drag then U.drag.side=side end
  end
- f:ClearAllPoints()
- if side=='above' then f:SetPoint('BOTTOM',chip,'TOP',0,8) else f:SetPoint('TOP',chip,'BOTTOM',0,-8) end
+ f:ClearAllPoints();f.cardX=cardX
+ if not bx then if side=='above' then f:SetPoint('BOTTOM',chip,'TOP',0,8) else f:SetPoint('TOP',chip,'BOTTOM',0,-8) end;return end
+ if side=='above' then f:SetPoint('BOTTOMLEFT',U.playerCanvas,'TOPLEFT',cardX,-bx[2]+8) else f:SetPoint('TOPLEFT',U.playerCanvas,'TOPLEFT',cardX,-(bx[2]+bx[3])-8) end
 end
 local function drawKicks(pool,y)
  if U.kickSub then U.kickSub:Hide() end
@@ -889,15 +908,15 @@ function U.CreateTimeline(parent)
   U.scrollTarget=math.max(0,math.min(maxScroll(U.rowsTotal or 0),(U.scrollTarget or A.view.scrollY or 0)-d*ROW()*2.5))
   U.scroller:Start()
  end)
- U.scrub=U.playerCanvas:CreateTexture(nil,'OVERLAY');U.scrub:SetColorTexture(U.Color('tl-scrub'));U.scrub:SetWidth(1);U.scrub:SetHeight(2000);U.scrub:Hide()
- U.bossScrub=U.canvas:CreateTexture(nil,'OVERLAY');U.bossScrub:SetColorTexture(U.Color('tl-scrub'));U.bossScrub:SetSize(1,2000);U.bossScrub:Hide()
+ U.scrub=U.playerCanvas:CreateTexture(nil,'OVERLAY');U.scrub:SetColorTexture(U.Color('tl-scrub'));U.scrub:SetWidth(2);U.scrub:SetHeight(2000);U.scrub:Hide()
+ U.bossScrub=U.canvas:CreateTexture(nil,'OVERLAY');U.bossScrub:SetColorTexture(U.Color('tl-scrub'));U.bossScrub:SetSize(2,2000);U.bossScrub:Hide()
  U.Crisp(U.scrub);U.Crisp(U.bossScrub)
  U.ghost=U.playerCanvas:CreateTexture(nil,'OVERLAY');U.ghost:SetColorTexture(1,1,1,1);U.ghost:Hide()
  U.ghostBand=U.playerCanvas:CreateTexture(nil,'OVERLAY');U.ghostBand:SetColorTexture(1,1,1,1);U.ghostBand:Hide()
  U.verdict=U.playerCanvas:CreateFontString(nil,'OVERLAY','GameFontHighlight');U.Font(U.verdict,11,'textMedium');U.verdict:Hide()
  local function hideGhost() U.ghost:Hide();U.ghostBand:Hide();U.verdict:Hide();U.ghostKey=nil end
  function U.MoveScrub(xx,t)
-  U.scrub:ClearAllPoints();U.scrub:SetPoint('TOPLEFT',xx,0);U.scrub:Show();U.bossScrub:ClearAllPoints();U.bossScrub:SetPoint('TOPLEFT',xx,0);U.bossScrub:Show()
+  U.scrub:ClearAllPoints();U.scrub:SetPoint('TOPLEFT',xx-1,0);U.scrub:Show();U.bossScrub:ClearAllPoints();U.bossScrub:SetPoint('TOPLEFT',xx-1,0);U.bossScrub:Show()
   for _,b in ipairs(U.bossPool.used) do if b.castTime then b:SetAlpha(math.abs(b.castTime-t)<=3 and 1 or 0.45) end end
  end
  local function preview(hit,t)

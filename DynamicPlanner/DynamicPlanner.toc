@@ -6,7 +6,7 @@
 ## Category: Raid
 ## Category-ptBR: Raide
 ## IconTexture: Interface\Icons\INV_Misc_PocketWatch_01
-## Version: 0.1.0
+## Version: 0.1.1
 ## SavedVariables: DynamicPlannerDB
 ## OptionalDeps: NorthernSkyRaidTools
 Core.lua
@@ -21,9 +21,11 @@ Data\Tooltips.lua
 Data\Effects.lua
 Data\Specs.lua
 Data\PhaseMaps.lua
+Data\Mechanics.lua
 Data\Roster.lua
 NSRT.lua
 Model.lua
+Analyzer.lua
 UI\Widgets.lua
 UI\Timeline.lua
 UI\Roster.lua
@@ -34,3 +36,5 @@ UI\Kicks.lua
 UI\Import.lua
 UI\Panels.lua
 UI\Share.lua
+UI\Card.lua
+UI\Analyzer.lua

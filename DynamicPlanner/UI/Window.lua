@@ -17,7 +17,8 @@ function U.Note(text,export)
  end
  local f=U.note;f.export=export;f.title:SetText(export and 'NSRT: Ctrl+C' or A.T('note.import'));f.apply:SetLabel(export and A.T('addon.select') or A.T('imp.reviewBtn'));f.apply:ClearAllPoints();f.apply:SetPoint('BOTTOMRIGHT',-16,16);f.edit:SetText(text or '');f.edit:SetCursorPosition(0);f.scroll:SetVerticalScroll(0);f:Show();f.edit:SetFocus();f.edit:HighlightText()
 end
-local HEAD_Y1,HEAD_Y2,ROW_GAP,GROUP_GAP=-12,-52,40,18
+local HEAD_Y1,HEAD_Y2,ROW_GAP,GROUP_GAP,GAP=-12,-52,40,18,4
+U.HEADER_GAP=GAP
 local function sepAt(i,x,y)
  local seps=U.headerSeps;local t=seps[i]
  if not t then t=U.window:CreateTexture(nil,'ARTWORK');t:SetColorTexture(U.Color('line'));t:SetSize(1,18);U.Crisp(t);seps[i]=t end
@@ -36,13 +37,26 @@ function U.LayoutHeader()
    elseif b:IsShown() then x=x-b:GetWidth();at(b,x,y);x=x-(gap or 4) end
   end
  end
- right({U.closeButton,U.helpButton,false,U.noteButton,false,U.gridButton,U.assignButton,U.kicksButton},HEAD_Y1,2)
- local plansW=U.plansButton:GetWidth()
- local titleMax=math.max(80,x-16-12-plansW-16)
+ local ana=U.Mode and U.Mode()=='analyzer'
+ if ana then right({U.closeButton,U.helpButton},HEAD_Y1,GAP)
+ else right({U.closeButton,U.helpButton,false,U.noteButton,U.sendButton,U.readButton,U.pasteButton,false,U.gridButton,U.assignButton,U.kicksButton},HEAD_Y1,GAP) end
+ local sx=16
+ if U.modeSwitch then sx=12;for _,k in ipairs({'planner','analyzer'}) do local b=U.modeSwitch[k];at(b,sx,HEAD_Y1);sx=sx+b:GetWidth()+GAP end;sx=sx+12 end
+ local plansW=U.plansButton:IsShown() and U.plansButton:GetWidth() or 0
+ local titleMax=x-sx-12-plansW-16
  local natural=U.title:GetUnboundedStringWidth() or 0
- local tw=math.min(natural>0 and natural+2 or titleMax,titleMax);U.title:SetWidth(tw)
- U.title:ClearAllPoints();U.title:SetPoint('LEFT',f,'TOPLEFT',16,HEAD_Y1-A.Theme.size.control/2)
- at(U.plansButton,16+tw+12,HEAD_Y1)
+ local tw=0
+ if titleMax>=60 then tw=math.min(natural>0 and natural+2 or titleMax,titleMax);U.title:Show() else U.title:Hide() end
+ U.title:SetWidth(math.max(1,tw))
+ U.title:ClearAllPoints();U.title:SetPoint('LEFT',f,'TOPLEFT',sx,HEAD_Y1-A.Theme.size.control/2)
+ at(U.plansButton,sx+(tw>0 and tw+12 or 0),HEAD_Y1)
+ if ana then
+  U.LayoutAnalyzerRow(HEAD_Y2)
+  for i=nsep+1,#U.headerSeps do U.headerSeps[i]:Hide() end
+  U.headerRows=2;U.panelTop=-(HEAD_Y2-A.Theme.size.control)+12
+  U.anaBody:ClearAllPoints();U.anaBody:SetPoint('TOPLEFT',f,'TOPLEFT',12,-U.panelTop);U.anaBody:SetPoint('BOTTOMRIGHT',f,'BOTTOMRIGHT',-12,12)
+  return
+ end
  local lx=12
  local function left(list,y,gap)
   for _,b in ipairs(list) do
@@ -51,13 +65,13 @@ function U.LayoutHeader()
   end
  end
  left({U.bossButton},HEAD_Y2,8);U.phasesFrame:SetWidth(math.max(1,U.chipsWidth or 0));at(U.phasesFrame,lx,HEAD_Y2);lx=lx+(U.chipsWidth or 0)
- left({false,U.modeButtons.ability,U.modeButtons.category},HEAD_Y2,2);lx=lx+2
- left({false,U.filtersButton,U.coverageButton},HEAD_Y2,4)
+ left({false,U.modeButtons.ability,U.modeButtons.category},HEAD_Y2,GAP)
+ left({false,U.filtersButton,U.coverageButton},HEAD_Y2,GAP)
  local rightList={U.compactButton,false,U.panRight,U.panLeft,U.zoomIn,U.zoomFit,U.zoomOut,false,U.redoButton,U.undoButton}
- local need=0;for _,b in ipairs(rightList) do if b==false then need=need+GROUP_GAP elseif b:IsShown() then need=need+b:GetWidth()+2 end end
+ local need=0;for _,b in ipairs(rightList) do if b==false then need=need+GROUP_GAP elseif b:IsShown() then need=need+b:GetWidth()+GAP end end
  local y=HEAD_Y2
  if lx+GROUP_GAP+need>W-12 then y=HEAD_Y2-ROW_GAP end
- x=W-12;right(rightList,y,2)
+ x=W-12;right(rightList,y,GAP)
  for i=nsep+1,#U.headerSeps do U.headerSeps[i]:Hide() end
  U.headerRows=(y==HEAD_Y2) and 2 or 3
  U.panelTop=-(y-A.Theme.size.control)+12
@@ -67,11 +81,8 @@ end
 U.LayoutToolbar=function(chipsWidth) if chipsWidth then U.chipsWidth=chipsWidth end;U.LayoutHeader() end
 function U.NoteItems()
  local items={{A.T('nb.title'),nil,title=true}}
- items[#items+1]={A.T('note.import'),function() U.Note('',false) end}
- items[#items+1]={A.T('addon.read'),function() A.ReadNSRT() end}
  items[#items+1]={A.T('note.copyRaid'),function() A.Export() end}
  items[#items+1]={A.T('pv.menu'),function() U.PreviewNote() end}
- if A.NSRTWritable() then items[#items+1]={A.T('addon.sendNsrt'),function() A.SendNSRT() end} end
  if A.Share and A.Share.InGroup() then items[#items+1]={A.T('addon.share'),function() A.Share.Send() end} end
  items[#items+1]={'',nil,divider=true}
  items[#items+1]={A.T('addon.clearAll'),function() U.ClearAll(U.noteButton) end}
@@ -84,10 +95,11 @@ function U.ClearAll(anchor)
 end
 function U.Render()
  if not U.window or not A.model then return end
+ if U.Mode and U.Mode()=='analyzer' then return U.RenderAnalyzer() end
  U.rev=(U.rev or 0)+1;U.rowsDirty=true
  U.RefreshLabels()
  U.canvas:SetHeight(A.view.pinHeight or U.window:GetHeight()*0.35)
- U.title:SetText(A.boss.name..', Mythic');U.bossButton:SetLabel(A.boss.name..'  v');U.plansButton:SetLabel(A.PlanName()..'  v')
+ U.title:SetText(A.boss.name..', Mythic');U.bossButton:SetLabel(A.boss.name);U.plansButton:SetLabel(A.PlanName())
  U.SheetHeader();U.RefreshProblems();U.status:SetText(A.PhaseMaps[A.boss.id].confirmed and '' or A.T('note.unconfirmed'))
  local unresolved=0;for _,a in ipairs(A.model.plan.lines) do if not A.Model.absolute(a,A.model.phases) then unresolved=unresolved+1 end end
  if unresolved>0 then U.status:SetText(A.T('addon.unknownPhases',{n=unresolved})) end
@@ -98,13 +110,14 @@ function U.Render()
   U.phasePool:release();U.phaseChips={};local buttons={{id='all',name='All'}};for _,p in ipairs(A.model.phases) do buttons[#buttons+1]=p end
   for i,p in ipairs(buttons) do
    local b=U.phasePool:get();b.text:SetText(p.id=='all' and A.T('all') or tostring(p.id));b.text:ClearAllPoints();b.text:SetPoint('CENTER');b.text:SetJustifyH('CENTER');U.Font(b.text,13,'textMedium')
-   local w=math.max(30,math.ceil(b.text:GetUnboundedStringWidth()+20));b:SetPoint('TOPLEFT',chipsWidth,0);b:SetSize(w,A.Theme.size.control);chipsWidth=chipsWidth+w+2;U.phaseChips[#U.phaseChips+1]=b
+   local w=math.max(30,math.ceil(b.text:GetUnboundedStringWidth()+20));b:SetPoint('TOPLEFT',chipsWidth,0);b:SetSize(w,A.Theme.size.control);chipsWidth=chipsWidth+w+GAP;U.phaseChips[#U.phaseChips+1]=b
    U.Active(b,(A.view.phase or 'all')==p.id)
    b:SetScript('OnClick',function() if not A.Allowed() then return end;A.view.phase=p.id;U.ZoomTo(p.start and p.start-2 or -5,p.start and (p['end']-p.start+4) or A.boss.duration+10);U.Render() end)
   end
  end
- U.chipsWidth=math.max(0,chipsWidth-2);U.noteButton:SetLabel(A.T('nb.btn')..'  v')
+ U.chipsWidth=math.max(0,chipsWidth-GAP);U.noteButton:SetLabel(A.T('nb.btn'))
  U.undoButton:SetAlpha(#A.model.undo>0 and 1 or 0.4);U.redoButton:SetAlpha(#A.model.redo>0 and 1 or 0.4)
+ for _,b in ipairs({U.readButton,U.sendButton}) do b:SetAlpha(b.why() and 0.4 or 1) end
  U.LayoutHeader()
  for key,b in pairs(U.modeButtons) do U.Active(b,A.view.mode==key) end
  for key,b in pairs(U.rosterModes or {}) do U.Active(b,(A.view.rosterMode or 'role')==key) end
@@ -126,18 +139,29 @@ function U.CreateWindow()
  U.closeButton=U.Button(f,'Close',0,-16,0,function() f:Hide() end,{always=true,quiet=true})
  U.bossButton=U.Button(f,'Boss',12,-68,220,function(b)
   local items={};for id,boss in pairs(A.Bosses) do items[#items+1]={boss.name,function() A.SelectBoss(id) end} end;table.sort(items,function(a,b)return a[1]<b[1] end);U.Menu(b,items)
- end)
+ end,{menu=true})
  local phases=CreateFrame('Frame',nil,f);phases:SetPoint('TOPLEFT',240,-68);phases:SetSize(210,30);U.phasesFrame=phases;U.phasePool=U.Pool(phases)
  U.modeButtons={}
  for i,entry in ipairs({{'ability','By ability'},{'category','By category'}}) do local key=entry[1];U.modeButtons[key]=U.Button(f,entry[2],0,-68,0,function() A.view.mode=key;A.view.bossOffset=0;U.Render() end) end
  U.CreateFilters(f)
+ U.CreateAnaFilter(f)
  U.CreateCoverage(f)
  U.coverageButton=U.Button(f,'',0,-104,0,function(b) U.ToggleCoverage(b) end,{key='fl.coverage'})
  do local cb=U.coverageButton;local oe,ol=cb:GetScript('OnEnter'),cb:GetScript('OnLeave')
   cb:SetScript('OnEnter',function(self) oe(self);U.Tooltip(self,A.T('addon.cvTip')) end);cb:SetScript('OnLeave',function(self) ol(self);GameTooltip:Hide() end) end
  U.filtersButton=U.Button(f,'Filters',0,-104,0,function(b) U.ToggleFilters(b) end,{key='fl.btn'})
- U.noteButton=U.Button(f,'Note',0,-104,0,function(b) U.Menu(b,U.NoteItems()) end,{key=false})
+ U.noteButton=U.Button(f,'Note',0,-104,0,function(b) U.Menu(b,U.NoteItems()) end,{key=false,menu=true})
  U.noteButton.tip=function() return A.T('nb.tip') end
+ local function noteAction(glyph,nameKey,tipKey,why,fn)
+  local b;b=U.IconButton(f,'glyph:'..glyph,30,function() local r=why and why();if r then A.Message(r) else fn() end end,function()
+   local r=why and why();return A.T(nameKey)..'\n|cffb8aeb9'..A.T(tipKey)..'|r'..(r and '\n|cfff34455'..r..'|r' or '') end,{quiet=true})
+  b.why=why;return b
+ end
+ U.pasteButton=noteAction('paste','hb.paste','hb.pasteTip',nil,function() U.Note('',false) end)
+ U.readButton=noteAction('nsrtIn','addon.read','hb.readTip',function() if not (NSAPI and type(NSAPI.GetReminderString)=='function') then return A.T('hb.noNsrt') end end,function() A.ReadNSRT() end)
+ U.sendButton=noteAction('nsrtOut','addon.sendNsrt','hb.sendTip',function()
+  if not (NSAPI and type(NSAPI.GetReminderString)=='function') and type(_G.NorthernSkyRaidTools)~='table' then return A.T('hb.noNsrt') end
+  if not A.NSRTWritable() then return A.T('hb.noSend') end end,function() A.SendNSRT() end)
  U.undoButton=U.IconButton(f,'glyph:undo',30,function() if A.Model.undo(A.model) then U.ClearSelection();A.Save();U.Render() end end,'h.undoAria')
  U.redoButton=U.IconButton(f,'glyph:redo',30,function() if A.Model.redo(A.model) then U.ClearSelection();A.Save();U.Render() end end,'addon.redoTip')
  U.zoomOut=U.IconButton(f,'glyph:minus',30,function() U.ZoomTo(nil,(U.zoomTarget and U.zoomTarget.span or A.view.span)*1.25,A.view.start+A.view.span/2) end)
@@ -155,16 +179,18 @@ function U.CreateWindow()
  U.helpButton=U.Button(f,'?',0,-104,30,function() U.Shortcuts() end,{key=false,quiet=true})
  do local hb=U.helpButton;local oe,ol=hb:GetScript('OnEnter'),hb:GetScript('OnLeave')
   hb:SetScript('OnEnter',function(self) oe(self);U.Tooltip(self,A.T('keys.btnTitle')) end);hb:SetScript('OnLeave',function(self) ol(self);GameTooltip:Hide() end) end
- U.plansButton=U.Button(f,'Main',0,-68,0,function(b) U.Menu(b,U.PlanItems()) end,{key=false})
+ U.plansButton=U.Button(f,'Main',0,-68,0,function(b) U.Menu(b,U.PlanItems()) end,{key=false,menu=true})
  do local pb=U.plansButton;local oe,ol=pb:GetScript('OnEnter'),pb:GetScript('OnLeave')
   pb:SetScript('OnEnter',function(self) oe(self);U.Tooltip(self,A.T('pl.btnTitle')) end);pb:SetScript('OnLeave',function(self) ol(self);GameTooltip:Hide() end) end
  drag:SetFrameLevel(f:GetFrameLevel()+1)
- for _,b in ipairs({U.closeButton,U.helpButton,U.noteButton,U.gridButton,U.assignButton,U.kicksButton,U.plansButton}) do b:SetFrameLevel(drag:GetFrameLevel()+3) end
+ for _,b in ipairs({U.closeButton,U.helpButton,U.noteButton,U.pasteButton,U.readButton,U.sendButton,U.gridButton,U.assignButton,U.kicksButton,U.plansButton}) do b:SetFrameLevel(drag:GetFrameLevel()+3) end
  U.CreateRoster(f);U.CreateTimeline(f)
+ U.CreateAnalyzerChrome(f)
+ for _,b in pairs(U.modeSwitch) do b:SetFrameLevel(drag:GetFrameLevel()+3) end
  local pinGrip=U.IconButton(f,'glyph:grip',28,function(b)
   if U.pinDragged then U.pinDragged=false;return end
   U.Menu(b,U.HamburgerItems())
- end);pinGrip:ClearAllPoints();pinGrip:SetPoint('TOPRIGHT',U.canvas,'BOTTOMRIGHT',-4,-4);pinGrip:RegisterForDrag('LeftButton')
+ end);U.pinGrip=pinGrip;pinGrip:ClearAllPoints();pinGrip:SetPoint('TOPRIGHT',U.canvas,'BOTTOMRIGHT',-4,-4);pinGrip:RegisterForDrag('LeftButton')
  pinGrip:SetScript('OnDragStart',function(self)
   if not A.Allowed() then return end
   U.pinDragged=true
@@ -189,13 +215,14 @@ function U.CreateWindow()
  local sizePending=false
  f:SetScript('OnSizeChanged',function()
   if sizePending or not U.canvas then return end;sizePending=true
-  C_Timer.After(0,function() sizePending=false;if not U.canvas or not f:IsShown() then return end;U.canvas:SetHeight(A.view.pinHeight or f:GetHeight()*0.35);if U.LayoutHeader then U.LayoutHeader() end;U.DrawTimeline();U.DrawRoster() end)
+  C_Timer.After(0,function() sizePending=false;if not U.canvas or not f:IsShown() then return end;U.canvas:SetHeight(A.view.pinHeight or f:GetHeight()*0.35);if U.LayoutHeader then U.LayoutHeader() end;if U.Mode()=='analyzer' then U.DrawAnalyzer() else U.DrawTimeline();U.DrawRoster() end end)
  end)
  f:SetScript('OnShow',function() if U.StartHover then U.StartHover(U.canvas) end;if A.Share and A.Share.pending then U.ShareOffer() end end)
  f:SetScript('OnHide',function() U.CancelDrag();if U.hoverer then U.hoverer:SetScript('OnUpdate',nil) end;if U.scroller then U.scroller:SetScript('OnUpdate',nil);U.scroller:Hide() end;if U.zoomer then U.zoomTarget=nil;U.zoomer:SetScript('OnUpdate',nil);U.zoomer:Hide() end;if U.menu then U.menu:Hide() end;A.Save() end)
  f:EnableKeyboard(true);U.Propagate(f,true);f:SetScript('OnKeyDown',function(_,key)
   if not A.Allowed() then return end
   if GetCurrentKeyBoardFocus and GetCurrentKeyBoardFocus() then U.Propagate(f,true);return end
+  if U.Mode()=='analyzer' then if key=='ESCAPE' then U.Propagate(f,false);f:Hide() else U.Propagate(f,true) end;return end
   if key=='ESCAPE' and #U.Selected()>0 then U.Propagate(f,false);U.ClearSelection();U.RequestDraw()
   elseif key=='ESCAPE' then U.Propagate(f,false);f:Hide()
   elseif (key=='DELETE' or key=='BACKSPACE') and #U.Selected()>0 then U.Propagate(f,false);U.RemoveLines(U.Selected())
@@ -210,6 +237,7 @@ function U.CreateWindow()
   elseif key=='0' or key=='NUMPAD0' then U.Propagate(f,false);A.view.phase='all';U.ZoomTo(-5,A.boss.duration+10)
   else U.Propagate(f,true) end
  end)
+ U.ApplyMode()
  U.Render()
 end
 function U.RefreshProblems()

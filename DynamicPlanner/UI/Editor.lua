@@ -47,7 +47,7 @@ local function build()
   U.Menu(b,items)
  end,{fixed=true})
  y=y-40
- for _,b in ipairs({f.who,f.what}) do b.text:ClearAllPoints();b.text:SetPoint('LEFT',10,0);b.text:SetPoint('RIGHT',-24,0);b.text:SetJustifyH('LEFT');U.Font(b.text,13);b.chev=U.Label(b,'v',0,0,11,'textMedium');b.chev:ClearAllPoints();b.chev:SetPoint('RIGHT',-10,0);b.chev:SetTextColor(U.Color('ink-3')) end
+ for _,b in ipairs({f.who,f.what}) do b.text:ClearAllPoints();b.text:SetPoint('LEFT',10,0);b.text:SetPoint('RIGHT',-24,0);b.text:SetJustifyH('LEFT');U.Font(b.text,13);b.chev=U.Chevron(b);b.chev:SetPoint('RIGHT',-10,0);b.chev:SetVertexColor(U.Color('ink-3')) end
  f.labels.text=caption(f,'',PAD,y);y=y-16
  f.text=U.Input(f,W-PAD*2);f.text:SetPoint('TOPLEFT',PAD,y);f.text:SetScript('OnTextChanged',function(self,user) if user then f.data.text=self:GetText();U.EditorPreview() end end);y=y-44
  f.labels.when=caption(f,'',PAD,y);y=y-16
@@ -87,7 +87,7 @@ local function build()
   end,multi=true,isChecked=function() return set[p.name]==true end} end end
   U.Menu(b,items)
  end,{fixed=true})
- for _,b in ipairs({f.sound,f.glow}) do b.text:ClearAllPoints();b.text:SetPoint('LEFT',10,0);b.text:SetPoint('RIGHT',-24,0);b.text:SetJustifyH('LEFT');U.Font(b.text,13);b.chev=U.Label(b,'v',0,0,11,'textMedium');b.chev:ClearAllPoints();b.chev:SetPoint('RIGHT',-10,0);b.chev:SetTextColor(U.Color('ink-3')) end
+ for _,b in ipairs({f.sound,f.glow}) do b.text:ClearAllPoints();b.text:SetPoint('LEFT',10,0);b.text:SetPoint('RIGHT',-24,0);b.text:SetJustifyH('LEFT');U.Font(b.text,13);b.chev=U.Chevron(b);b.chev:SetPoint('RIGHT',-10,0);b.chev:SetVertexColor(U.Color('ink-3')) end
  y=y-40
  f.labels.color=caption(f,'',PAD,y);y=y-16
  f.swatches={};local sx=PAD

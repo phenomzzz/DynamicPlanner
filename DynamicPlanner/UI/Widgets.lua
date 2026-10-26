@@ -65,17 +65,26 @@ end
 local function localeKey(text)
  for key,value in pairs(A.Locales.en) do if value==text then return key end end
 end
+U.ChevronTexture=TEX..'chevron'
+function U.Chevron(parent) local t=parent:CreateTexture(nil,'OVERLAY');t:SetTexture(U.ChevronTexture);t:SetSize(10,10);return t end
 function U.Button(parent,text,x,y,w,fn,opts)
  opts=opts or {}
  local b=CreateFrame('Button',nil,parent);b:SetPoint('TOPLEFT',x,y);b:SetHeight(opts.height or A.Theme.size.control)
  U.Surface(b,'panel-2','line',6);b.quiet=opts.quiet
  b.text=U.Text(b);U.Font(b.text,opts.size or A.Theme.size.text,'textMedium');U.Line(b.text)
- b.text:SetPoint('LEFT',10,0);b.text:SetPoint('RIGHT',-10,0);b.text:SetJustifyH('CENTER')
+ local extra=0
+ if opts.menu then
+  extra=16;b.chev=U.Chevron(b);b.chev:SetPoint('RIGHT',-10,0)
+  local set=b.text.SetTextColor;local chev=b.chev
+  b.text.SetTextColor=function(self,r,g,bb,a) set(self,r,g,bb,a);chev:SetVertexColor(r,g,bb,a or 1) end
+  b.text:SetTextColor(U.Color('ink'))
+ end
+ b.text:SetPoint('LEFT',10,0);b.text:SetPoint('RIGHT',-10-extra,0);b.text:SetJustifyH('CENTER')
  b.minWidth=w or 0;b.fixed=opts.fixed
  function b:SetLabel(s)
   self.text:SetText(s or '')
   local w=self.text:GetUnboundedStringWidth();if not w or w<=0 then w=#(s or '')*7 end
-  if not self.fixed then self:SetWidth(math.max(self.minWidth,math.ceil(w+20))) else self:SetWidth(self.minWidth) end
+  if not self.fixed then self:SetWidth(math.max(self.minWidth,math.ceil(w+20+extra))) else self:SetWidth(self.minWidth) end
  end
  b:SetLabel((opts.key and (text==nil or text=='')) and A.T(opts.key) or text)
  b.localeKey=opts.key or localeKey(text)
@@ -95,13 +104,17 @@ local function glyph(b,kind)
  elseif kind=='right' then bar(7,2,1,2,-0.785);bar(7,2,1,-2,0.785)
  elseif kind=='grip' then bar(14,1,0,3);bar(14,1,0,0);bar(14,1,0,-3)
  elseif kind=='undo' then bar(6,2,-4,3,0.785);bar(6,2,-4,-1,-0.785);bar(10,2,1,1);bar(2,6,5,-1)
- elseif kind=='redo' then bar(6,2,4,3,-0.785);bar(6,2,4,-1,0.785);bar(10,2,-1,1);bar(2,6,-5,-1) end
+ elseif kind=='redo' then bar(6,2,4,3,-0.785);bar(6,2,4,-1,0.785);bar(10,2,-1,1);bar(2,6,-5,-1)
+ elseif kind=='paste' then bar(2,12,-5,-1);bar(2,12,5,-1);bar(12,2,0,-6);bar(4,2,-3,4);bar(4,2,3,4);bar(6,3,0,5);bar(6,1,0,0);bar(6,1,0,-3)
+ elseif kind=='nsrtIn' then bar(14,2,0,-6);bar(2,4,-6,-4);bar(2,4,6,-4);bar(2,9,0,3);bar(6,2,-2,0,-0.785);bar(6,2,2,0,0.785)
+ elseif kind=='nsrtOut' then bar(14,2,0,-6);bar(2,4,-6,-4);bar(2,4,6,-4);bar(2,9,0,0);bar(6,2,-2,4,0.785);bar(6,2,2,4,-0.785) end
  local proxy={}
  function proxy:SetVertexColor(r,g,bb,a) for _,t in ipairs(parts) do t:SetVertexColor(r,g,bb,a) end end
  return proxy
 end
-function U.IconButton(parent,texture,size,fn,tip)
+function U.IconButton(parent,texture,size,fn,tip,opts)
  local b=CreateFrame('Button',nil,parent);b:SetSize(size or A.Theme.size.control,size or A.Theme.size.control);U.Surface(b,'panel-2','line',6)
+ local quiet=opts and opts.quiet;b.quiet=quiet
  if type(tip)=='string' and A.Locales and A.Locales.en[tip] then local key=tip;tip=function() return A.T(key) end end
  if texture:match('^glyph:') then b.icon=glyph(b,texture:sub(7))
  else b.icon=b:CreateTexture(nil,'ARTWORK');b.icon:SetPoint('CENTER');b.icon:SetSize(16,16);b.icon:SetTexture(texture) end
@@ -109,7 +122,8 @@ function U.IconButton(parent,texture,size,fn,tip)
  b.text=U.Text(b);b.text:SetText('');b.minWidth=size or A.Theme.size.control;function b:SetLabel() end
  b:SetScript('OnClick',function(self,button) if A.Allowed() and fn then fn(self,button) end end)
  b:SetScript('OnEnter',function(self) self:SetBackdropColor(U.Color('ground-3'));self.icon:SetVertexColor(U.Color('ink'));if tip then U.Tooltip(self,type(tip)=='function' and tip() or tip) end end)
- b:SetScript('OnLeave',function(self) self:SetBackdropColor(U.Color('panel-2'));self.icon:SetVertexColor(U.Color('ink-2'));GameTooltip:Hide() end)
+ b:SetScript('OnLeave',function(self) if quiet then self:SetBackdropColor(0,0,0,0) else self:SetBackdropColor(U.Color('panel-2')) end;self.icon:SetVertexColor(U.Color('ink-2'));GameTooltip:Hide() end)
+ if quiet then b:SetBackdropColor(0,0,0,0);b:SetBackdropBorderColor(0,0,0,0) end
  return b
 end
 function U.RefreshLabels()
@@ -163,7 +177,7 @@ function U.Pool(parent)
   b.icon:Hide();b.icon:ClearAllPoints();b.icon:SetPoint('LEFT',2,0);b.icon:SetSize(18,18);b.icon:SetDesaturated(false);b.icon:SetTexCoord(0.08,0.92,0.08,0.92);b.icon:SetVertexColor(1,1,1,1)
   b.box=nil;b.row=nil;b.text:Show()
   for i=1,#POOL_SCRIPTS do b:SetScript(POOL_SCRIPTS[i],nil) end
-  b.castTime=nil;b.player=nil;b.seat=nil;b.bench=nil;b.zone=nil;b.dpList=nil;b.dpTo=nil;if b.ilvl then b.ilvl:Hide() end;if b.count then b.count:Hide() end
+  b.castTime=nil;b.player=nil;b.seat=nil;b.bench=nil;b.zone=nil;b.dpList=nil;b.dpTo=nil;b.isSeeAll=nil;b.isSwitch=nil;if b.ilvl then b.ilvl:Hide() end;if b.count then b.count:Hide() end
   b:EnableMouse(true);b:RegisterForClicks('LeftButtonUp','RightButtonUp');b:RegisterForDrag('LeftButton');b:SetAlpha(1);b:SetFrameLevel(parent:GetFrameLevel()+2)
   b.dpBg:Show();b.dpRing:Show();U.Radius(b,4);b:SetBackdropColor(U.Color('panel'));b:SetBackdropBorderColor(U.Color('line'));if b.dpHatch then b.dpHatch:Hide() end
   b:Show();self.used[#self.used+1]=b;return b

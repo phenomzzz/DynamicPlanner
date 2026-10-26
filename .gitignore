@@ -1,3 +1,4 @@
-tools/leak-names.private.txt
 dist/
 *.zip
+__pycache__/
+pulls/
